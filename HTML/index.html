@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实验室专利与软著管理知识库系统</title>
+    <link href=" https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css " rel="stylesheet">
+    <link href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css " rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--secondary-color) !important;
+        }
+        
+        .welcome-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .feature-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .online {
+            background-color: #2ecc71;
+        }
+        
+        .offline {
+            background-color: #e74c3c;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quick-action-btn {
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap me-2"></i>
+                专利知识库系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="fas fa-home me-1"></i> 首页
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">
+                            <i class="fas fa-star me-1"></i> 功能
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#demo">
+                            <i class="fas fa-play-circle me-1"></i> 演示
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="me-3 text-muted" id="userInfo">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span id="usernameDisplay">请先登录</span>
+                    </span>
+                    <button class="btn btn-outline-primary btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-1"></i> 退出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="container mt-4">
+        <!-- 欢迎卡片 -->
+        <div class="card welcome-card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="card-title text-primary">欢迎使用</h1>
+                        <h2 class="card-subtitle mb-3">实验室专利与软著管理知识库系统</h2>
+                        <p class="card-text">
+                            本系统专为高校实验室设计的智能知识产权管理平台，
+                            整合专利撰写指导、软著流程规范、案例库学习等功能，
+                            助力师生高效完成知识产权相关工作。
+                        </p>
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            <button class="btn btn-primary quick-action-btn" onclick="gotoPatentSearch()">
+                                <i class="fas fa-search me-1"></i> 专利查询
+                            </button>
+                            <button class="btn btn-success quick-action-btn" onclick="gotoQA()">
+                                <i class="fas fa-robot me-1"></i> 智能问答
+                            </button>
+                            <button class="btn btn-warning quick-action-btn" onclick="gotoDocManager()">
+                                <i class="fas fa-folder-open me-1"></i> 文档管理
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-book-reader" style="font-size: 8rem; color: #e74c3c;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统状态 -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h5 class="card-title">数据统计</h5>
+                        <div class="d-flex justify-content-center mb-2">
+                            <span class="status-dot online"></span>
+                            <span class="text-success">数据库正常</span>
+                        </div>
+                        <div class="row text-center mt-3">
+                            <div class="col-6">
+                                <h3 class="text-primary" id="userCount">0</h3>
+                                <p class="text-muted small">用户数量</p>
+                            </div>
+                            <div class="col-6">
+                                <h3 class="text-success" id="patentCount">0</h3>
+                                <p class="text-muted small">专利总数</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h5 class="card-title">AI助手状态</h5>
+                        <div class="d-flex justify-content-center mb-2">
+                            <span class="status-dot online"></span>
+                            <span class="text-success">在线</span>
+                        </div>
+                        <p class="card-text small">
+                            智能问答助手已就绪，可回答专利撰写、软著申请相关问题
+                        </p>
+                        <div class="mt-3">
+                            <input type="text" class="form-control form-control-sm" 
+                                   placeholder="输入问题，例如：如何撰写专利摘要？" 
+                                   id="quickQuestion">
+                            <button class="btn btn-sm btn-outline-primary w-100 mt-2" onclick="askQuestion()">
+                                <i class="fas fa-paper-plane me-1"></i> 提问
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h5 class="card-title">提醒通知</h5>
+                        <div class="mb-3">
+                            <span class="badge bg-danger">今日提醒</span>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item border-0 px-0 py-2">
+                                <small>
+                                    <i class="fas fa-clock text-warning me-2"></i>
+                                    3天后：专利 "智能图像识别系统" 即将公开
+                                </small>
+                            </div>
+                            <div class="list-group-item border-0 px-0 py-2">
+                                <small>
+                                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                                    本周需提交：软著 "实验室管理平台" 申请材料
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能模块 -->
+        <h3 class="mb-3" id="features">核心功能模块</h3>
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h6 class="card-title">专利撰写指导</h6>
+                        <p class="card-text small">提供专利申请书撰写模板、流程规范、常见错误提示</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h6 class="card-title">软著申请管理</h6>
+                        <p class="card-text small">软件著作权申请全流程跟踪，材料清单自动生成</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h6 class="card-title">智能检索问答</h6>
+                        <p class="card-text small">基于RAG技术，从知识库中检索并生成精准答案</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 feature-card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h6 class="card-title">数据统计分析</h6>
+                        <p class="card-text small">专利授权率、申请周期、技术领域分布可视化分析</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 演示视频 -->
+        <div class="card mb-4" id="demo">
+            <div class="card-header bg-light">
+                <h4 class="mb-0">产品演示视频</h4>
+            </div>
+            <div class="card-body">
+                <div class="ratio ratio-16x9">
+                    <!-- 视频占位符，实际使用时替换为真实视频 -->
+                    <div class="bg-secondary d-flex align-items-center justify-content-center">
+                        <div class="text-center text-white">
+                            <i class="fas fa-play-circle fa-5x mb-3"></i>
+                            <p>系统功能演示视频</p>
+                            <p class="small">（教学视频自动加载）</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 简易图表 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h6 class="text-center mb-3">本月专利类型分布</h6>
+                    <canvas id="patentTypeChart" height="200"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h6 class="text-center mb-3">申请状态统计</h6>
+                    <canvas id="patentStatusChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>实验室专利与软著管理知识库系统</h5>
+                    <p class="mb-0">本科生毕业设计项目</p>
+                    <small>版本：v1.0.0-demo | 更新时间：2025年1月</small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p>指导老师：XXX教授</p>
+                    <p>开发团队：实验室学生组</p>
+                    <div class="mt-3">
+                        <i class="fab fa-github fa-2x me-3"></i>
+                        <i class="fab fa-python fa-2x me-3"></i>
+                        <i class="fab fa-js fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js "></script>
+    <!-- Chart.js -->
+    <script src=" https://cdn.jsdelivr.net/npm/chart.js "></script>
+    <!-- 页面逻辑 -->
+    <script>
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            loadStatistics();
+            initCharts();
+        });
+
+        // 检查登录状态
+        function checkLoginStatus() {
+            // 从sessionStorage获取登录信息
+            const username = sessionStorage.getItem('username');
+            const userInfoEl = document.getElementById('userInfo');
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            
+            if (username) {
+                usernameDisplay.textContent = username;
+                userInfoEl.classList.remove('text-muted');
+                userInfoEl.classList.add('text-primary');
+            } else {
+                // 未登录，跳转到登录页
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1000);
+            }
+        }
+
+        // 加载统计数据（模拟）
+        function loadStatistics() {
+            // 模拟数据
+            document.getElementById('userCount').textContent = Math.floor(Math.random() * 50) + 10;
+            document.getElementById('patentCount').textContent = Math.floor(Math.random() * 100) + 20;
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // 专利类型饼图
+            const typeCtx = document.getElementById('patentTypeChart').getContext('2d');
+            new Chart(typeCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['发明专利', '实用新型', '外观设计', '软件著作权'],
+                    datasets: [{
+                        data: [40, 25, 10, 25],
+                        backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 申请状态柱状图
+            const statusCtx = document.getElementById('patentStatusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['受理', '初审', '实审', '授权', '驳回'],
+                    datasets: [{
+                        label: '数量',
+                        data: [32, 28, 16, 22, 4],
+                        backgroundColor: [
+                            '#3498db',
+                            '#2ecc71',
+                            '#f39c12',
+                            '#9b59b6',
+                            '#e74c3c'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 快速提问功能
+        function askQuestion() {
+            const question = document.getElementById('quickQuestion').value;
+            if (!question.trim()) {
+                alert('请输入问题');
+                return;
+            }
+
+            alert(`问题已提交: "${question}"\n\n(演示版：此功能待RAG模块集成后完善)`);
+            document.getElementById('quickQuestion').value = '';
+        }
+
+        // 快速导航功能
+        function gotoPatentSearch() {
+            alert('演示版：专利查询模块待开发');
+        }
+
+        function gotoQA() {
+            alert('演示版：智能问答模块待开发');
+        }
+
+        function gotoDocManager() {
+            alert('演示版：文档管理模块待开发');
+        }
+
+        // 退出登录
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>
