@@ -18,7 +18,7 @@ def setup_logging():
 
 def create_app(config_name='development'):
     '''创建Flask应用'''
-    app = Flask(__name__, static_folder='HTML', template_folder='HTML')
+    app = Flask(__name__, static_folder='HTML', static_url_path='/static', template_folder='HTML')
     
     # 加载配置
     if config_name == 'development':
@@ -38,9 +38,11 @@ def create_app(config_name='development'):
     # 注册蓝图
     from app.appRoutes.loginRoutes import login_bp
     from app.appRoutes.registerRoutes import register_bp
+    from app.appRoutes.aiRoutes import ai_bp
     
     app.register_blueprint(login_bp, url_prefix='/api')
     app.register_blueprint(register_bp, url_prefix='/api')
+    app.register_blueprint(ai_bp, url_prefix='/api')
     
     # 创建数据库表
     with app.app_context():
@@ -49,11 +51,21 @@ def create_app(config_name='development'):
     @app.route('/')
     def index():
         '''首页'''
-        return app.send_static_file('index.html')
+        return app.send_static_file('main.html')
     
     @app.route('/login')
     def login_page():
         '''登录页面'''
         return app.send_static_file('login.html')
     
+    @app.route('/index')
+    def index_page():
+        '''首页'''
+        return app.send_static_file('index.html')
+    
+    @app.route('/ai-chat')
+    def ai_chat_page():
+        '''AI问答页面'''
+        return app.send_static_file('ai-chat.html')
+
     return app

@@ -40,7 +40,7 @@ function doLogin() {
             showMessage('登录成功，正在跳转...', 'success');
             // 2秒后跳转到首页
             setTimeout(() => {
-                window.location.href = '/';
+                window.location.href = '/index';
             }, 2000);
         } else {
             showMessage(data.message, 'danger');

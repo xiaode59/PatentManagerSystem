@@ -6,8 +6,8 @@ login_bp = Blueprint('login', __name__)
 user_service = UserServiceImpl()
 
 @login_bp.route('/', methods=['POST'])
-def index():
-    return render_template('index.html')
+def html_main():
+    return render_template('main.html')
 
 @login_bp.route('/login', methods=['POST'])
 def login():
